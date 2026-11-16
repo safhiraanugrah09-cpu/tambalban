@@ -1,0 +1,7 @@
+# Lindungi file konfigurasi dan kunci instalasi dari akses langsung.
+<FilesMatch "^(config\.php|installed\.lock)$">
+    Require all denied
+</FilesMatch>
+
+Options -Indexes
+DirectoryIndex index.html

@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tambal Ban</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: top bar with Pelanggan/Admin switch; customer app in a phone-width column, admin as a full-width dashboard. */
+:root{
+  --bg:#eaf0fc; --surface:#ffffff; --surface2:#eef3ff; --ink:#0f1f45; --muted:#58698f; --line:#dce5f6;
+  --brand:#1f4fd8; --brand-deep:#13307f; --on-brand:#ffffff; --accent:#f2b01e;
+  --ok:#17794d; --ok-bg:#d9f3e5; --warn:#8f5a00; --warn-bg:#fcebc4; --bad:#b3372a; --bad-bg:#fadfdb; --info:#1f4fd8; --info-bg:#dfe8ff;
+  --map-land:#eef1f6; --map-road:#ffffff; --map-water:#c9dcf5; --map-park:#cfe8cf; --map-label:#8190ad;
+  --shadow:0 8px 28px rgba(19,48,127,.12);
+  --font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#080e20; --surface:#111a35; --surface2:#182449; --ink:#e8eefc; --muted:#9aa9cc; --line:#243259;
+    --brand:#3d6bf2; --brand-deep:#1a3799; --on-brand:#ffffff; --accent:#f2b01e;
+    --ok:#6fdba4; --ok-bg:#12382a; --warn:#f3c768; --warn-bg:#3a2d0c; --bad:#ff9d90; --bad-bg:#40191a; --info:#9db8ff; --info-bg:#1b2c61;
+    --map-land:#18213d; --map-road:#2a3760; --map-water:#173260; --map-park:#173a2c; --map-label:#7385ad;
+    --shadow:0 8px 28px rgba(0,0,0,.45); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#080e20; --surface:#111a35; --surface2:#182449; --ink:#e8eefc; --muted:#9aa9cc; --line:#243259;
+  --brand:#3d6bf2; --brand-deep:#1a3799; --on-brand:#ffffff; --accent:#f2b01e;
+  --ok:#6fdba4; --ok-bg:#12382a; --warn:#f3c768; --warn-bg:#3a2d0c; --bad:#ff9d90; --bad-bg:#40191a; --info:#9db8ff; --info-bg:#1b2c61;
+  --map-land:#18213d; --map-road:#2a3760; --map-water:#173260; --map-park:#173a2c; --map-label:#7385ad;
+  --shadow:0 8px 28px rgba(0,0,0,.45); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;font-size:14px}
+[hidden]{display:none!important}
+img{max-width:100%}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0;overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+h1,h2,h3,p{margin:0}
+.shell{display:flex;flex-direction:column;height:100%;gap:10px;padding-block:10px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;min-height:38px}
+.brandmark{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+.brandmark svg{color:var(--brand)}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:6px 14px;border-radius:999px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand)}
+.stage{flex:1;min-height:0;display:flex;justify-content:center}
+.phone{width:100%;max-width:430px;align-self:stretch;max-height:880px;background:var(--surface);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.screen{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:16px 16px 20px;display:flex;flex-direction:column;gap:16px}
+.navbar{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);background:var(--surface);padding:6px 6px 8px}
+.navbar button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;font-size:11px;font-weight:600;color:var(--muted);border-radius:12px}
+.navbar button[aria-current="page"]{color:var(--brand);background:var(--surface2)}
+/* splash */
+.splash{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:28px 24px 28px;text-align:center;background:linear-gradient(180deg,var(--surface2),var(--surface) 70%);position:relative;overflow:hidden}
+.splash .blob{position:absolute;border-radius:50%;background:var(--brand);opacity:.10}
+.splash .b1{width:200px;height:200px;right:-60px;top:-50px}
+.splash .b2{width:240px;height:240px;left:-100px;bottom:60px}
+.splash h1{font-size:34px;font-weight:800;letter-spacing:-.02em;color:var(--brand-deep)}
+:root[data-theme="dark"] .splash h1{color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .splash h1{color:var(--ink)}}
+.splash .tag{font-weight:600;color:var(--muted);letter-spacing:.04em}
+.splash .art{width:min(260px,70%);position:relative;z-index:1}
+.splash>*{position:relative;z-index:1}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:10px 16px;font-weight:700}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.btn.lg{padding:14px 22px;font-size:15px;border-radius:999px;min-width:220px}
+.btn.block{width:100%;padding:14px 16px;font-size:15px}
+.btn.ghost{background:none}
+.btn.danger{color:var(--bad);border-color:var(--bad-bg);background:var(--bad-bg)}
+.btn.sm{padding:6px 10px;font-size:12px;border-radius:10px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.iconbtn{border:0;background:var(--surface2);width:38px;height:38px;border-radius:12px;display:grid;place-items:center;position:relative;color:var(--ink)}
+.badge{position:absolute;top:-3px;right:-3px;background:var(--accent);color:#1b1500;font-size:10px;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px}
+/* home */
+.head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.loc{display:flex;align-items:center;gap:8px;border:0;background:none;text-align:left;padding:0;min-width:0}
+.loc svg{color:var(--brand);flex:none}
+.loc small{display:block;color:var(--muted);font-size:11px;font-weight:600}
+.loc b{display:flex;align-items:center;gap:2px;font-size:14px}
+.loc b span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:210px}
+.banner{background:linear-gradient(120deg,var(--brand-deep),var(--brand));color:#fff;border-radius:20px;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;text-align:left;width:100%}
+.banner h2{font-size:19px;font-weight:800;margin-bottom:4px}
+.banner p{opacity:.9;font-size:13px}
+.banner .go{background:rgba(255,255,255,.18);width:42px;height:42px;border-radius:50%;display:grid;place-items:center;flex:none}
+.sec{display:flex;align-items:baseline;justify-content:space-between}
+.sec h3{font-size:16px;font-weight:800}
+.link{border:0;background:none;color:var(--brand);font-weight:700;display:inline-flex;align-items:center;gap:2px;padding:0}
+:root[data-theme="dark"] .link{color:var(--info)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .link{color:var(--info)}}
+.svcgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.svc{border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:700;text-align:center;min-width:0}
+.svc svg{color:var(--brand)}
+:root[data-theme="dark"] .svc svg{color:var(--info)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .svc svg{color:var(--info)}}
+.svc small{font-weight:600;color:var(--muted);font-size:10.5px}
+.svc[aria-pressed="true"]{border-color:var(--brand);background:var(--surface2);box-shadow:0 0 0 2px var(--brand) inset}
+.list{display:flex;flex-direction:column;gap:10px}
+.ws{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:10px;width:100%;text-align:left;min-width:0}
+.ws .av{width:56px;height:56px;border-radius:14px;background:var(--surface2);color:var(--brand);display:grid;place-items:center;font-weight:800;font-size:17px;flex:none}
+.ws .meta{flex:1;min-width:0}
+.ws b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ws .sub{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;flex-wrap:wrap}
+.ws .sub span{display:inline-flex;align-items:center;gap:3px}
+.star{color:var(--accent)}
+.pill{display:inline-flex;align-items:center;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:700;white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)} .pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)} .pill.info{background:var(--info-bg);color:var(--info)} .pill.mute{background:var(--surface2);color:var(--muted)}
+.empty{border:1px dashed var(--line);border-radius:16px;padding:18px;color:var(--muted);text-align:center}
+.notice{background:var(--warn-bg);color:var(--warn);border-radius:14px;padding:10px 12px;font-size:12.5px;font-weight:600}
+/* map */
+.map{width:100%;height:auto;aspect-ratio:100/80;display:block;border-radius:18px;touch-action:manipulation}
+.map[data-edit]:not([data-edit=""]){cursor:crosshair}
+.map text{font-family:var(--font);font-size:2.6px;fill:var(--map-label);font-weight:600}
+.map .pin{cursor:pointer}
+.pulse{animation:pulse 2.2s ease-out infinite;transform-origin:center;transform-box:fill-box}
+@keyframes pulse{0%{transform:scale(.6);opacity:.5}100%{transform:scale(1.6);opacity:0}}
+@media (prefers-reduced-motion: reduce){.pulse{animation:none}}
+.maphint{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:var(--ink);color:var(--surface);padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;max-width:94%;overflow:hidden;text-overflow:ellipsis}
+.mapwrap{position:relative}
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+/* forms */
+.field{display:flex;flex-direction:column;gap:5px}
+.field label,.lbl{font-size:12px;font-weight:700;color:var(--muted)}
+.inp{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;width:100%;min-width:0}
+textarea.inp{resize:vertical;min-height:64px}
+.row2{display:flex;gap:8px}
+.row2>*{flex:1;min-width:0}
+.back{display:flex;align-items:center;gap:10px}
+.back h2{font-size:17px;font-weight:800;flex:1;text-align:center;margin-right:38px}
+.addr{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:12px;width:100%;text-align:left}
+.addr svg{color:var(--brand);flex:none}
+.addr span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pay{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--surface);width:100%;text-align:left}
+.pay span{flex:1}
+.pay .radio{flex:none}
+.radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center}
+.pay[aria-checked="true"]{border-color:var(--brand);background:var(--surface2)}
+.pay[aria-checked="true"] .radio{border-color:var(--brand)}
+.pay[aria-checked="true"] .radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--brand)}
+.total{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:15px}
+.ord{border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.ord .t{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+/* admin */
+.adminwrap{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:14px;box-shadow:var(--shadow)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-weight:700;color:var(--muted);display:inline-flex;gap:6px;align-items:center}
+.tabs button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.adminbody{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:14px;padding-right:2px}
+.stats{display:flex;gap:18px;flex-wrap:wrap;align-items:baseline}
+.stats div{display:flex;flex-direction:column}
+.stats b{font-size:20px;font-variant-numeric:tabular-nums}
+.stats span{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--muted)}
+.chips button[aria-pressed="true"]{background:var(--surface2);color:var(--brand);border-color:var(--brand)}
+.ordgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.ordgrid .ord{gap:8px}
+.kv{display:grid;grid-template-columns:90px 1fr;gap:2px 8px;font-size:13px}
+.kv dt{color:var(--muted);font-weight:600} .kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.editrow{display:grid;grid-template-columns:auto minmax(120px,1.2fr) minmax(90px,.7fr) minmax(140px,1.6fr) auto auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--surface)}
+.wsrow{display:grid;grid-template-columns:minmax(130px,1.3fr) minmax(110px,.8fr) 70px 80px auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--surface)}
+.wsrow.sel{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand) inset}
+.twocol{display:grid;grid-template-columns:minmax(260px,420px) 1fr;gap:14px;align-items:start}
+.check{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted)}
+.check input{width:18px;height:18px;accent-color:var(--brand)}
+.cfgform{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;max-width:760px}
+.cust{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--surface);display:grid;grid-template-columns:minmax(140px,1fr) minmax(160px,1.6fr) minmax(130px,1fr) auto;gap:10px;align-items:center}
+.sechead{font-size:15px;font-weight:800}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:12px;font-weight:600;box-shadow:var(--shadow);z-index:50;max-width:90vw}
+.toast[hidden]{display:none}
+@media (max-width:760px){
+  .editrow{grid-template-columns:1fr 1fr}
+  .wsrow{grid-template-columns:1fr 1fr}
+  .twocol{grid-template-columns:1fr}
+  .cust{grid-template-columns:1fr}
+  .phone{max-height:none;border-radius:24px}
+}
+</style>
+</head>
+<body>
+<div id="app" aria-live="polite"></div>
+<div id="toast" class="toast" hidden role="status"></div>
+<script>
+(function(){
+"use strict";
+var $app=document.getElementById('app'), $toast=document.getElementById('toast');
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function rp(n){return 'Rp '+Number(n||0).toLocaleString('id-ID')}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)*0.04}
+function fmtKm(d){return '±'+d.toFixed(1).replace('.',',')+' km'}
+function fmtRev(n){n=Number(n||0);return n>=1000?(n/1000).toFixed(1).replace('.',',')+'rb':String(n)}
+function fmtTime(t){try{return new Date(t).toLocaleString('id-ID',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}catch(e){return ''}}
+function uid(){return 'o'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+
+var DEF_CFG={appName:'Tambal Ban',tagline:'Cepat • Dekat • Praktis',bannerTitle:'Butuh tambal ban?',bannerText:'Pesan sekarang, kami siap membantu!',payCash:true,payEwallet:true,ewalletLabel:'DANA / OVO / GoPay'};
+var STATUS=['Baru','Diproses','Dalam perjalanan','Selesai','Dibatalkan'];
+var NEXT={'Baru':'Diproses','Diproses':'Dalam perjalanan','Dalam perjalanan':'Selesai'};
+var NEXTLBL={'Baru':'Proses pesanan','Diproses':'Tukang berangkat','Dalam perjalanan':'Tandai selesai'};
+var STCLS={'Baru':'info','Diproses':'warn','Dalam perjalanan':'warn','Selesai':'ok','Dibatalkan':'bad'};
+var ICON_KEYS=['tambal','ganti','angin','servis','aki','oli'];
+var ICON_NAMES={tambal:'Ban',ganti:'Ganti',angin:'Angin',servis:'Kunci',aki:'Aki',oli:'Oli'};
+
+var P={
+ tambal:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 3v5.5M12 15.5V21M3 12h5.5M15.5 12H21"/>',
+ ganti:'<path d="M20 12a8 8 0 0 1-13.7 5.6"/><path d="M4 12a8 8 0 0 1 13.7-5.6"/><path d="M18 3v4h-4M6 21v-4h4"/><circle cx="12" cy="12" r="2"/>',
+ angin:'<path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/><path d="M5 20h14"/>',
+ servis:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+ aki:'<rect x="3" y="7" width="18" height="12" rx="2"/><path d="M7 7V5h3v2M14 7V5h3v2M8 13h3M14 13h3"/>',
+ oli:'<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+ pin:'<path d="M12 21s7-6.2 7-11.5a7 7 0 1 0-14 0C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+ bell:'<path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+ home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+ chev:'<path d="M9 6l6 6-6 6"/>', back:'<path d="M15 6l-6 6 6 6"/>', arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
+ map:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/>',
+ sliders:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>', trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+ list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+ users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-5.5 7-5.5s7 2 7 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2.2.6 4 2.2 4 5.2"/>',
+ cog:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>'
+};
+function ic(n,s,fill){s=s||22;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="'+(fill||'none')+'" stroke="'+(fill?'none':'currentColor')+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(P[n]||P.servis)+'</svg>'}
+function star(){return '<svg class="star" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>'}
+
+function bigTire(){
+ var t='';for(var i=0;i<24;i++){t+='<rect x="97" y="8" width="6" height="14" rx="2" fill="#4a5168" transform="rotate('+(i*15)+' 100 100)"/>'}
+ return '<svg viewBox="0 0 200 200" width="100%" role="img" aria-label="Ban dan kunci pas"><circle cx="100" cy="100" r="96" fill="var(--surface2)"/>'
+ +'<circle cx="100" cy="100" r="82" fill="#1d2234"/>'+t+'<circle cx="100" cy="100" r="62" fill="#2b3148"/>'
+ +'<circle cx="100" cy="100" r="46" fill="#d3d9e8"/><circle cx="100" cy="100" r="40" fill="#aeb7cf"/>'
+ +'<g stroke="#e9edf6" stroke-width="8" stroke-linecap="round">'+[0,72,144,216,288].map(function(a){return '<line x1="100" y1="100" x2="100" y2="66" transform="rotate('+a+' 100 100)"/>'}).join('')+'</g>'
+ +'<circle cx="100" cy="100" r="11" fill="#5b6483"/><circle cx="100" cy="100" r="4" fill="#d3d9e8"/>'
+ +'<g transform="translate(138 22)"><circle cx="24" cy="24" r="24" fill="var(--brand)"/><g transform="translate(10 10) scale(1.17)" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+P.servis+'</g></g></svg>';
+}
+
+/* ---------- state ---------- */
+var S={mode:'cust',screen:'splash',adminTab:'orders',filter:'Semua',
+ cfg:null,services:[],workshops:[],customers:[],myOrders:[],adminOrders:[],
+ loaded:{cfg:false,services:false,workshops:false},slow:false,
+ me:{id:null,name:'',canEdit:false},profile:null,
+ sel:{ws:null,svc:null,pay:'cash'},form:{},editLoc:false,draft:null,placeId:null,confirmDel:null,authMode:'login',sig:''};
+var pending=false, chain=Promise.resolve();
+
+function cfg(){return Object.assign({},DEF_CFG,S.cfg||{})}
+function myLoc(){var p=S.profile;if(S.draft)return S.draft;if(p&&typeof p.x==='number')return {x:p.x,y:p.y};return {x:50,y:42}}
+function activeWs(){return S.workshops.filter(function(w){return w.active!==false})}
+function wsSorted(){var l=myLoc();return activeWs().map(function(w){return Object.assign({},w,{d:dist(l,w)})}).sort(function(a,b){return a.d-b.d})}
+function activeSvc(){return S.services.filter(function(s){return s.active!==false})}
+function myOrders(){return S.myOrders.slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0)})}
+function allOrders(){return S.adminOrders.slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0)})}
+function customerById(id){for(var i=0;i<S.customers.length;i++)if(S.customers[i].id===id)return S.customers[i];return null}
+function toast(msg){$toast.textContent=msg;$toast.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(function(){$toast.hidden=true},2800)}
+
+/* ---------- API ---------- */
+function api(action,body){
+ var opt={credentials:'same-origin'};
+ if(body){opt.method='POST';opt.headers={'Content-Type':'application/json','X-Requested-With':'tambalban'};opt.body=JSON.stringify(body)}
+ return fetch('api.php?a='+action,opt).then(function(r){
+  return r.json().catch(function(){return {ok:false,error:'Server tidak merespons dengan benar.'}}).then(function(j){
+   if(!r.ok||j.ok===false){var e=new Error(j.error||'Terjadi kesalahan.');e.status=r.status;throw e}
+   return j;
+  });
+ });
+}
+function apply(j){
+ var sig=JSON.stringify(j);if(sig===S.sig)return;S.sig=sig;
+ S.cfg=j.config;S.services=j.services||[];S.workshops=j.workshops||[];S.loaded={cfg:true,services:true,workshops:true};S.slow=false;
+ S.me={id:(j.me&&j.me.customerId)||null,name:(j.me&&j.me.name)||'',canEdit:!!(j.me&&j.me.role==='admin')};
+ S.profile=j.profile||null;S.myOrders=j.orders||[];S.adminOrders=j.adminOrders||[];S.customers=j.customers||[];
+ sched();
+}
+function refresh(){return api('bootstrap').then(apply)}
+function act(action,body,msg){
+ var p=chain.then(function(){return api(action,body)}).then(function(j){if(msg)toast(msg);return refresh().then(function(){return j})});
+ chain=p.catch(function(){});
+ return p.catch(function(e){toast(e.message||'Gagal. Coba lagi.');return null});
+}
+
+/* ---------- map ---------- */
+function pinG(wk,selected){
+ var sc=selected?1.25:1;
+ return '<g class="pin" data-a="pickWs" data-id="'+esc(wk.id)+'" transform="translate('+wk.x+' '+wk.y+') scale('+sc+')" tabindex="0" role="button" aria-label="'+esc(wk.name)+'">'
+ +(selected?'<circle cy="-8" r="7.4" fill="var(--accent)" opacity=".35"/>':'')
+ +'<path d="M0 0C-3.4-4.4-5-6.2-5-8.5a5 5 0 1 1 10 0C5-6.2 3.4-4.4 0 0z" fill="var(--brand)" stroke="#fff" stroke-width=".6"/>'
+ +'<circle cy="-8.5" r="2.5" fill="none" stroke="#fff" stroke-width=".9"/><circle cy="-8.5" r=".8" fill="#fff"/></g>';
+}
+function mapSvg(o){
+ var s='<svg class="map" viewBox="0 0 100 80" data-edit="'+(o.edit||'')+'" role="img" aria-label="Peta lokasi">';
+ s+='<rect width="100" height="80" fill="var(--map-land)"/>';
+ s+='<path d="M0 62C20 55 30 70 50 60S85 50 100 58L100 66C85 58 70 68 50 68S18 62 0 70Z" fill="var(--map-water)"/>';
+ s+='<rect x="62" y="6" width="22" height="15" rx="3" fill="var(--map-park)"/><rect x="5" y="28" width="14" height="12" rx="3" fill="var(--map-park)"/><rect x="70" y="44" width="16" height="9" rx="3" fill="var(--map-park)"/>';
+ s+='<g stroke="var(--map-road)" fill="none" stroke-linecap="round"><path d="M0 20L100 26M0 44L100 40M24 0L30 80M58 0L66 80" stroke-width="2.6"/><path d="M0 10L100 12M44 0L48 80M80 0L84 80M0 33L100 33" stroke-width="1.2"/></g>';
+ s+='<text x="3" y="18.5">Jl. Raya</text><text x="31" y="42.4">Jl. Melati</text><text x="67" y="78" opacity=".0">.</text>';
+ (o.customers||[]).forEach(function(c){if(typeof c.x==='number')s+='<circle cx="'+c.x+'" cy="'+c.y+'" r="1.7" fill="var(--accent)" stroke="#fff" stroke-width=".5"><title>'+esc(c.name||'Pelanggan')+'</title></circle>'});
+ (o.workshops||[]).forEach(function(wk){s+=pinG(wk,wk.id===o.selected)});
+ if(o.me){s+='<g transform="translate('+o.me.x+' '+o.me.y+')"><circle class="pulse" r="7" fill="var(--brand)" opacity=".25"/><circle r="2.8" fill="var(--brand)" stroke="#fff" stroke-width="1"/></g>'}
+ return s+'</svg>';
+}
+
+/* ---------- customer views ---------- */
+function wsCard(wk,withBtn){
+ var st=wk.status||'Siap Datang', cls=st==='Siap Datang'?'ok':(st==='Sibuk'?'warn':'mute');
+ return '<button class="ws" data-a="'+(withBtn||'openWs')+'" data-id="'+esc(wk.id)+'"><span class="av">'+esc((wk.name||'?').slice(0,2).toUpperCase())+'</span>'
+ +'<span class="meta"><b>'+esc(wk.name)+'</b><span class="sub"><span>'+star()+' '+Number(wk.rating||0).toFixed(1).replace('.',',')+' ('+fmtRev(wk.reviews)+' ulasan)</span><span>'+ic('pin',13)+' '+fmtKm(wk.d!=null?wk.d:dist(myLoc(),wk))+'</span></span></span>'
+ +'<span class="pill '+cls+'">'+esc(st)+'</span></button>';
+}
+function svcBtn(s,pressed,act){
+ return '<button class="svc" data-a="'+act+'" data-id="'+esc(s.id)+'"'+(pressed!=null?' aria-pressed="'+pressed+'"':'')+'>'+ic(s.icon,28)+'<span>'+esc(s.name)+'</span>'+(s.price?'<small>'+rp(s.price)+'</small>':'')+'</button>';
+}
+function loadingOrEmpty(key,msg){
+ if(!S.loaded[key]) return '<div class="empty">'+(S.slow?'Data belum bisa dijangkau. Coba muat ulang halaman.':'Memuat data…')+'</div>';
+ return '<div class="empty">'+msg+'</div>';
+}
+function splash(){
+ var c=cfg();
+ return '<div class="splash"><span class="blob b1"></span><span class="blob b2"></span>'
+ +'<div><h1>'+esc(c.appName)+'</h1><p class="tag">'+esc(c.tagline)+'</p></div>'
+ +'<div class="art">'+bigTire()+'</div>'
+ +'<button class="btn primary lg" data-a="start">Mulai Sekarang '+ic('arrow',18)+'</button></div>';
+}
+function homeScreen(){
+ var c=cfg(), p=S.profile, active=myOrders().filter(function(o){return o.status!=='Selesai'&&o.status!=='Dibatalkan'}).length;
+ var near=wsSorted().slice(0,3), svcs=activeSvc();
+ return '<div class="head"><button class="loc" data-a="editLoc">'+ic('pin',24)+'<span style="min-width:0"><small>Lokasi Anda</small><b><span>'+esc((p&&p.address)||'Atur lokasi Anda')+'</span>'+ic('chev',16)+'</b></span></button>'
+ +'<button class="iconbtn" data-a="goOrders" aria-label="Pesanan aktif">'+ic('bell',20)+(active?'<span class="badge">'+active+'</span>':'')+'</button></div>'
+ +'<button class="banner" data-a="quick"><span><h2>'+esc(c.bannerTitle)+'</h2><p>'+esc(c.bannerText)+'</p></span><span class="go">'+ic('arrow',20)+'</span></button>'
+ +'<div class="sec"><h3>Layanan Kami</h3></div>'
+ +(svcs.length?'<div class="svcgrid">'+svcs.map(function(s){return svcBtn(s,null,'pickSvc')}).join('')+'</div>':loadingOrEmpty('services','Belum ada layanan. Admin dapat menambahkannya.'))
+ +'<div class="sec"><h3>Tukang Terdekat</h3><button class="link" data-a="goMap">Lihat Semua '+ic('chev',15)+'</button></div>'
+ +(near.length?'<div class="list">'+near.map(function(x){return wsCard(x,'openWs')}).join('')+'</div>':loadingOrEmpty('workshops','Belum ada tukang aktif di sekitar Anda.'));
+}
+function mapScreen(){
+ var l=myLoc(), list=wsSorted(), selId=S.sel.ws, sw=null;
+ list.forEach(function(x){if(x.id===selId)sw=x}); if(!sw&&list.length){sw=list[0]}
+ var body='<div class="back"><span style="width:38px"></span><h2>Peta Lokasi</h2><button class="iconbtn" data-a="'+(S.editLoc?'cancelLoc':'editLoc')+'" aria-label="Ubah lokasi" title="Ubah lokasi">'+ic('sliders',20)+'</button></div>'
+ +'<div class="mapwrap">'+mapSvg({edit:S.editLoc?'setDraft':'',workshops:list,selected:sw&&sw.id,me:l})+(S.editLoc?'<div class="maphint">Ketuk peta untuk memindahkan titik Anda</div>':'')+'</div>';
+ if(S.editLoc){
+  var f=S.form.addr!=null?S.form.addr:((S.profile&&S.profile.address)||'');
+  body+='<div class="sheet"><div class="field"><label for="f-addr">Alamat Anda</label><input class="inp" id="f-addr" data-d="addr" value="'+esc(f)+'" placeholder="Contoh: Jl. Melati No. 12"></div>'
+  +'<div class="row2"><button class="btn" data-a="cancelLoc">Batal</button><button class="btn primary" data-a="saveLoc">Simpan Lokasi</button></div></div>';
+ } else if(sw){
+  body+='<div class="sheet">'+wsCard(sw,'noop')+'<button class="btn primary block" data-a="openWs" data-id="'+esc(sw.id)+'">Pesan Sekarang</button></div>';
+ } else body+=loadingOrEmpty('workshops','Belum ada tukang aktif.');
+ return body;
+}
+function bookScreen(){
+ var c=cfg(), wk=null, sv=null, l=myLoc();
+ S.workshops.forEach(function(x){if(x.id===S.sel.ws)wk=x});
+ S.services.forEach(function(x){if(x.id===S.sel.svc)sv=x});
+ var svcs=activeSvc(), addr=(S.profile&&S.profile.address)||'';
+ var pays=[]; if(c.payCash)pays.push(['cash','Tunai']); if(c.payEwallet)pays.push(['ewallet',c.ewalletLabel]);
+ if(pays.length&&!pays.some(function(p){return p[0]===S.sel.pay}))S.sel.pay=pays[0][0];
+ var note=S.form.note||'';
+ var ready=wk&&wk.status!=='Tutup'&&sv&&addr&&pays.length&&S.me.id;
+ var h='<div class="back"><button class="iconbtn" data-a="goHome" aria-label="Kembali">'+ic('back',20)+'</button><h2>Pesan Layanan</h2></div>';
+ if(!S.me.id)h+='<div class="notice">Masuk atau daftar dulu untuk memesan. <button class="link" data-a="goProfile">Masuk sekarang</button></div>';
+ h+=wk?wsCard(Object.assign({},wk,{d:dist(l,wk)}),'goMap'):'<button class="addr" data-a="goMap">'+ic('map',20)+'<span>Pilih tukang di peta</span>'+ic('chev',16)+'</button>';
+ h+='<div class="lbl">Jenis Layanan</div>'+(svcs.length?'<div class="svcgrid">'+svcs.map(function(s){return svcBtn(s,s.id===S.sel.svc,'pickSvc2')}).join('')+'</div>':'<div class="empty">Belum ada layanan tersedia.</div>');
+ h+='<div class="lbl">Alamat Anda</div><button class="addr" data-a="editLoc">'+ic('pin',20)+'<span>'+esc(addr||'Atur lokasi Anda')+'</span>'+ic('chev',16)+'</button>';
+ h+='<div class="field"><label for="f-note">Catatan untuk tukang</label><textarea class="inp" id="f-note" data-d="note" placeholder="Contoh: Motor Beat, ban belakang bocor">'+esc(note)+'</textarea></div>';
+ h+='<div class="lbl">Metode Pembayaran</div>'+(pays.length?'<div class="list">'+pays.map(function(p){return '<button class="pay" role="radio" aria-checked="'+(S.sel.pay===p[0])+'" data-a="pickPay" data-id="'+p[0]+'"><span>'+esc(p[1])+'</span><span class="radio"></span></button>'}).join('')+'</div>':'<div class="empty">Belum ada metode pembayaran aktif.</div>');
+ h+='<div class="total"><span>Perkiraan biaya</span><span>'+(sv?rp(sv.price):'-')+'</span></div>';
+ h+='<button class="btn primary block" data-a="order"'+(ready?'':' disabled')+'>Pesan Sekarang</button>';
+ if(wk&&wk.status==='Tutup')h+='<p class="small muted">Tukang ini sedang tutup. Pilih tukang lain.</p>';
+ else if(!addr&&S.me.id)h+='<p class="small muted">Atur alamat Anda dulu agar tukang tahu lokasinya.</p>';
+ return h;
+}
+function ordersScreen(){
+ var l=myOrders();
+ var h='<div class="back"><span style="width:38px"></span><h2>Pesanan</h2></div>';
+ if(!S.me.id)return h+authForm();
+ if(!l.length)return h+'<div class="empty">Belum ada pesanan. Pilih layanan di Beranda untuk memesan.</div>';
+ return h+'<div class="list">'+l.map(function(o){
+  return '<div class="ord"><div class="t"><b>'+esc(o.serviceName)+'</b><span class="pill '+(STCLS[o.status]||'mute')+'">'+esc(o.status)+'</span></div>'
+  +'<div class="small muted">'+esc(o.workshopName)+' · '+rp(o.price)+' · '+(o.payment==='cash'?'Tunai':esc(cfg().ewalletLabel))+'</div>'
+  +'<div class="small muted">'+ic('pin',12)+' '+esc(o.address)+'</div>'
+  +(o.note?'<div class="small">Catatan: '+esc(o.note)+'</div>':'')
+  +'<div class="t"><span class="small muted">'+fmtTime(o.createdAt)+'</span>'+(o.status==='Baru'?'<button class="btn sm danger" data-a="cancel" data-id="'+esc(o.id)+'">Batalkan</button>':'')+'</div></div>';
+ }).join('')+'</div>';
+}
+function profileScreen(){
+ var p=S.profile||{};
+ var nm=S.form.name!=null?S.form.name:(p.name||S.me.name||''), ph=S.form.phone!=null?S.form.phone:(p.phone||'');
+ var h='<div class="back"><span style="width:38px"></span><h2>Profil</h2></div>';
+ if(!S.me.id)return h+authForm();
+ h+='<div class="field"><label for="f-name">Nama</label><input class="inp" id="f-name" data-d="name" value="'+esc(nm)+'" placeholder="Nama Anda"></div>'
+ +'<div class="field"><label for="f-phone">Nomor WhatsApp</label><input class="inp" id="f-phone" data-d="phone" inputmode="tel" value="'+esc(ph)+'" placeholder="08xxxxxxxxxx"></div>'
+ +'<div class="lbl">Alamat &amp; lokasi</div><button class="addr" data-a="editLoc">'+ic('pin',20)+'<span>'+esc(p.address||'Atur lokasi Anda di peta')+'</span>'+ic('chev',16)+'</button>'
+ +'<button class="btn primary block" data-a="saveProfile">Simpan Profil</button><button class="btn block ghost" data-a="logout">Keluar</button>';
+ return h;
+}
+function phone(){
+ var sc=S.screen;
+ if(sc==='splash')return '<div class="phone" data-scroll="p">'+splash()+'</div>';
+ var body=sc==='home'?homeScreen():sc==='map'?mapScreen():sc==='orders'?ordersScreen():sc==='profile'?profileScreen():sc==='book'?bookScreen():'';
+ var cur=sc==='book'?'home':sc;
+ var nav=[['home','Beranda','home'],['map','Peta','pin'],['orders','Pesanan','clock'],['profile','Profil','user']];
+ return '<div class="phone"><div class="screen" data-scroll="s">'+body+'</div><nav class="navbar" aria-label="Menu utama">'
+ +nav.map(function(n){return '<button data-a="nav" data-id="'+n[0]+'"'+(cur===n[0]?' aria-current="page"':'')+'>'+ic(n[2],22)+n[1]+'</button>'}).join('')+'</nav></div>';
+}
+
+/* ---------- admin views ---------- */
+function adminOrders(){
+ var all=allOrders(), f=S.filter;
+ var cnt=function(s){return all.filter(function(o){return o.status===s}).length};
+ var rev=all.filter(function(o){return o.status==='Selesai'}).reduce(function(a,o){return a+(Number(o.price)||0)},0);
+ var list=f==='Semua'?all:all.filter(function(o){return o.status===f});
+ var h='<div class="stats"><div><b>'+cnt('Baru')+'</b><span>Baru</span></div><div><b>'+cnt('Diproses')+'</b><span>Diproses</span></div><div><b>'+cnt('Dalam perjalanan')+'</b><span>Dalam perjalanan</span></div><div><b>'+cnt('Selesai')+'</b><span>Selesai</span></div><div><b>'+rp(rev)+'</b><span>Pendapatan selesai</span></div></div>';
+ h+='<div class="chips" role="group" aria-label="Filter status">'+['Semua'].concat(STATUS).map(function(s){return '<button data-a="filter" data-id="'+esc(s)+'" aria-pressed="'+(f===s)+'">'+esc(s)+'</button>'}).join('')+'</div>';
+ if(!list.length)return h+'<div class="empty">'+(all.length?'Tidak ada pesanan dengan status ini.':'Belum ada pesanan masuk. Pesanan pelanggan akan muncul di sini secara langsung.')+'</div>';
+ return h+'<div class="ordgrid">'+list.map(function(o){
+  var c=customerById(o.uid), nx=NEXT[o.status];
+  return '<article class="ord"><div class="t"><b>'+esc(o.serviceName)+' · '+rp(o.price)+'</b><span class="pill '+(STCLS[o.status]||'mute')+'">'+esc(o.status)+'</span></div>'
+  +'<dl class="kv" style="margin:0"><dt>Pesanan</dt><dd>#'+esc(String(o.id).slice(-5).toUpperCase())+' · '+fmtTime(o.createdAt)+'</dd><dt>Pelanggan</dt><dd>'+esc(o.customerName)+(c&&c.phone?' · '+esc(c.phone):'')+'</dd><dt>Tukang</dt><dd>'+esc(o.workshopName)+'</dd><dt>Alamat</dt><dd>'+esc(o.address)+'</dd><dt>Bayar</dt><dd>'+(o.payment==='cash'?'Tunai':esc(cfg().ewalletLabel))+'</dd>'+(o.note?'<dt>Catatan</dt><dd>'+esc(o.note)+'</dd>':'')+'</dl>'
+  +'<div class="acts"><label class="sr" style="position:absolute;left:-9999px" for="st-'+esc(o.id)+'">Status</label><select class="inp" style="width:auto" id="st-'+esc(o.id)+'" data-st="'+esc(o.uid)+'|'+esc(o.id)+'">'+STATUS.map(function(s){return '<option'+(s===o.status?' selected':'')+'>'+s+'</option>'}).join('')+'</select>'
+  +(nx?'<button class="btn primary sm" data-a="advance" data-id="'+esc(o.uid)+'|'+esc(o.id)+'|'+esc(nx)+'">'+NEXTLBL[o.status]+'</button>':'')+'</div></article>';
+ }).join('')+'</div>';
+}
+function adminServices(){
+ var h='<div class="sec"><h3 class="sechead">Layanan yang tampil di aplikasi pelanggan</h3><button class="btn primary sm" data-a="addSvc">'+ic('plus',14)+' Tambah layanan</button></div>';
+ if(!S.services.length)return h+loadingOrEmpty('services','Belum ada layanan. Tekan Tambah layanan.');
+ return h+'<div class="list">'+S.services.map(function(s){
+  var k='services|'+s.id+'|';
+  return '<div class="editrow"><select class="inp" aria-label="Ikon" data-f="'+k+'icon">'+ICON_KEYS.map(function(i){return '<option value="'+i+'"'+(s.icon===i?' selected':'')+'>'+ICON_NAMES[i]+'</option>'}).join('')+'</select>'
+  +'<input class="inp" aria-label="Nama layanan" data-f="'+k+'name" value="'+esc(s.name)+'">'
+  +'<input class="inp" aria-label="Harga" type="number" min="0" step="1000" data-f="'+k+'price" value="'+esc(s.price)+'">'
+  +'<input class="inp" aria-label="Keterangan" data-f="'+k+'desc" value="'+esc(s.desc||'')+'" placeholder="Keterangan singkat">'
+  +'<label class="check"><input type="checkbox" data-f="'+k+'active"'+(s.active!==false?' checked':'')+'> Aktif</label>'
+  +'<button class="btn sm danger" data-a="delSvc" data-id="'+esc(s.id)+'" aria-label="Hapus layanan">'+(S.confirmDel==='svc'+s.id?'Yakin hapus?':ic('trash',14))+'</button></div>';
+ }).join('')+'</div>';
+}
+function adminWorkshops(){
+ var sel=S.placeId;
+ var h='<div class="sec"><h3 class="sechead">Tukang tambal ban</h3><button class="btn primary sm" data-a="addWs">'+ic('plus',14)+' Tambah tukang</button></div>';
+ var rows=S.workshops.length?S.workshops.map(function(x){
+  var k='workshops|'+x.id+'|';
+  return '<div class="wsrow'+(sel===x.id?' sel':'')+'"><input class="inp" aria-label="Nama tukang" data-f="'+k+'name" value="'+esc(x.name)+'">'
+  +'<select class="inp" aria-label="Status" data-f="'+k+'status">'+['Siap Datang','Sibuk','Tutup'].map(function(s){return '<option'+(x.status===s?' selected':'')+'>'+s+'</option>'}).join('')+'</select>'
+  +'<input class="inp" aria-label="Rating" type="number" min="0" max="5" step="0.1" data-f="'+k+'rating" value="'+esc(x.rating)+'">'
+  +'<input class="inp" aria-label="Jumlah ulasan" type="number" min="0" step="1" data-f="'+k+'reviews" value="'+esc(x.reviews)+'">'
+  +'<span class="acts"><label class="check"><input type="checkbox" data-f="'+k+'active"'+(x.active!==false?' checked':'')+'> Aktif</label>'
+  +'<button class="btn sm'+(sel===x.id?' primary':'')+'" data-a="placeWs" data-id="'+esc(x.id)+'">'+ic('pin',14)+' Posisi</button>'
+  +'<button class="btn sm danger" data-a="delWs" data-id="'+esc(x.id)+'" aria-label="Hapus tukang">'+(S.confirmDel==='ws'+x.id?'Yakin?':ic('trash',14))+'</button></span></div>';
+ }).join(''):loadingOrEmpty('workshops','Belum ada tukang. Tekan Tambah tukang.');
+ var map='<div><div class="mapwrap">'+mapSvg({edit:sel?'placeWs':'',workshops:S.workshops,selected:sel,customers:S.customers})+'</div><p class="small muted" style="margin-top:6px">'+(sel?'Ketuk peta untuk memindahkan posisi tukang yang dipilih.':'Pilih tombol Posisi pada tukang, lalu ketuk peta. Titik kuning adalah lokasi pelanggan.')+'</p></div>';
+ return h+'<div class="twocol">'+map+'<div class="list">'+rows+'</div></div>';
+}
+function adminCustomers(){
+ var h='<div class="sec"><h3 class="sechead">Pelanggan</h3></div>';
+ if(!S.customers.length)return h+'<div class="empty">Belum ada pelanggan yang menyimpan profil atau lokasi.</div>';
+ var all=allOrders();
+ return h+'<div class="list">'+S.customers.map(function(c){
+  var n=all.filter(function(o){return o.uid===c.id}).length, near=null;
+  if(typeof c.x==='number'){var best=null;activeWs().forEach(function(x){var d=dist(c,x);if(!best||d<best.d)best={d:d,n:x.name}});near=best}
+  return '<div class="cust"><div><b>'+esc(c.name||'Pelanggan')+'</b><div class="small muted">'+(c.phone?esc(c.phone):'Tanpa nomor')+'</div></div>'
+  +'<div class="small">'+ic('pin',12)+' '+esc(c.address||'Alamat belum diisi')+(near?'<div class="muted">Terdekat: '+esc(near.n)+' ('+fmtKm(near.d)+')</div>':'')+'</div>'
+  +'<div class="small muted">Diperbarui '+(c.updatedAt?fmtTime(c.updatedAt):'-')+'</div><span class="pill info">'+n+' pesanan</span></div>';
+ }).join('')+'</div>';
+}
+function adminConfig(){
+ var c=cfg(), k='config|app|';
+ function tf(label,key,val,id){return '<div class="field"><label for="'+id+'">'+label+'</label><input class="inp" id="'+id+'" data-f="'+k+key+'" value="'+esc(val)+'"></div>'}
+ return '<div class="sec"><h3 class="sechead">Tampilan dan pembayaran</h3></div><div class="cfgform">'
+ +tf('Nama aplikasi','appName',c.appName,'c1')+tf('Slogan','tagline',c.tagline,'c2')+tf('Judul banner','bannerTitle',c.bannerTitle,'c3')+tf('Teks banner','bannerText',c.bannerText,'c4')+tf('Nama e-wallet','ewalletLabel',c.ewalletLabel,'c5')
+ +'<div class="field"><span class="lbl">Metode pembayaran</span><label class="check"><input type="checkbox" data-f="'+k+'payCash"'+(c.payCash?' checked':'')+'> Tunai</label><label class="check"><input type="checkbox" data-f="'+k+'payEwallet"'+(c.payEwallet?' checked':'')+'> E-wallet</label></div></div>'
+ +'<p class="small muted">Perubahan tampil di aplikasi pelanggan dalam beberapa detik.</p>'+pwForm();
+}
+function adminView(){
+ var tabs=[['orders','Pesanan','list'],['services','Layanan','servis'],['workshops','Tukang','pin'],['customers','Pelanggan','users'],['config','Tampilan','cog']];
+ var b=S.adminTab==='orders'?adminOrders():S.adminTab==='services'?adminServices():S.adminTab==='workshops'?adminWorkshops():S.adminTab==='customers'?adminCustomers():adminConfig();
+ return '<div class="adminwrap"><div class="tabs" role="group" aria-label="Menu admin">'+tabs.map(function(t){return '<button data-a="atab" data-id="'+t[0]+'" aria-pressed="'+(S.adminTab===t[0])+'">'+ic(t[2],16)+t[1]+'</button>'}).join('')+'</div><div class="adminbody" data-scroll="a">'+b+'</div></div>';
+}
+
+/* ---------- render ---------- */
+function render(){
+ var keep={};Array.prototype.forEach.call($app.querySelectorAll('[data-scroll]'),function(e){keep[e.dataset.scroll]=e.scrollTop});
+ var admin=S.mode==='admin', full=admin&&S.me.canEdit, c=cfg(), right;
+ if(S.me.canEdit){right='<div style="display:flex;gap:12px;align-items:center"><div class="seg" role="group" aria-label="Tampilan"><button data-a="mode" data-id="cust" aria-pressed="'+!admin+'">Pelanggan</button><button data-a="mode" data-id="admin" aria-pressed="'+admin+'">Admin</button></div><button class="link" data-a="logout">Keluar</button></div>'}
+ else right=admin?'<button class="link" data-a="mode" data-id="cust">Kembali ke aplikasi</button>':'<button class="link" data-a="mode" data-id="admin">Masuk Admin</button>';
+ var main=admin?(S.me.canEdit?adminView():adminLoginView()):phone();
+ $app.innerHTML='<div class="shell"><header class="top"><div class="brandmark">'+ic('tambal',22)+esc(c.appName)+(full?' · Admin':'')+'</div>'+right+'</header><main class="'+(full?'adminwrap-outer':'stage')+'" style="'+(full?'flex:1;min-height:0;display:flex;flex-direction:column':'')+'">'+main+'</main></div>';
+ Array.prototype.forEach.call($app.querySelectorAll('[data-scroll]'),function(e){if(keep[e.dataset.scroll]!=null)e.scrollTop=keep[e.dataset.scroll]});
+}
+function sched(){
+ var a=document.activeElement;
+ if(a&&$app.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)){pending=true;return}
+ render();
+}
+$app.addEventListener('focusout',function(){
+ if(!pending)return;
+ setTimeout(function(){var a=document.activeElement;if(a&&$app.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;pending=false;render()},0);
+});
+
+/* ---------- auth views ---------- */
+function authForm(){
+ var reg=S.authMode==='register';
+ return '<div class="sheet"><div class="seg" role="group" aria-label="Masuk atau daftar" style="align-self:center"><button data-a="authMode" data-id="login" aria-pressed="'+!reg+'">Masuk</button><button data-a="authMode" data-id="register" aria-pressed="'+reg+'">Daftar</button></div>'
+ +(reg?'<div class="field"><label for="a-name">Nama</label><input class="inp" id="a-name" data-d="aname" data-enter="doAuth" autocomplete="name" value="'+esc(S.form.aname||'')+'"></div>':'')
+ +'<div class="field"><label for="a-phone">Nomor WhatsApp</label><input class="inp" id="a-phone" data-d="aphone" data-enter="doAuth" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx" value="'+esc(S.form.aphone||'')+'"></div>'
+ +'<div class="field"><label for="a-pin">PIN (4 sampai 6 angka)</label><input class="inp" id="a-pin" type="password" inputmode="numeric" maxlength="6" data-d="apin" data-enter="doAuth" autocomplete="'+(reg?'new-password':'current-password')+'" value="'+esc(S.form.apin||'')+'"></div>'
+ +'<button class="btn primary block" data-a="doAuth">'+(reg?'Daftar':'Masuk')+'</button><p class="small muted">Nomor dan PIN dipakai untuk masuk lagi dan melihat pesanan Anda.</p></div>';
+}
+function adminLoginView(){
+ return '<div class="stage"><div class="phone" style="height:auto;max-height:none;align-self:flex-start;padding:22px;gap:14px"><h2 style="font-size:20px;font-weight:800">Masuk Admin</h2>'
+ +'<div class="field"><label for="ad-u">Username</label><input class="inp" id="ad-u" data-d="auser" data-enter="adminLogin" autocomplete="username" value="'+esc(S.form.auser||'')+'"></div>'
+ +'<div class="field"><label for="ad-p">Password</label><input class="inp" id="ad-p" type="password" data-d="apass" data-enter="adminLogin" autocomplete="current-password" value="'+esc(S.form.apass||'')+'"></div>'
+ +'<button class="btn primary block" data-a="adminLogin">Masuk</button></div></div>';
+}
+function pwForm(){
+ return '<div class="sec"><h3 class="sechead">Ganti password admin</h3></div><div class="cfgform"><div class="field"><label for="pw1">Password lama</label><input class="inp" id="pw1" type="password" autocomplete="current-password" data-d="oldpw" value="'+esc(S.form.oldpw||'')+'"></div>'
+ +'<div class="field"><label for="pw2">Password baru (minimal 8 karakter)</label><input class="inp" id="pw2" type="password" autocomplete="new-password" data-d="newpw" value="'+esc(S.form.newpw||'')+'"></div></div>'
+ +'<div><button class="btn primary sm" data-a="changePw">Simpan password</button></div>';
+}
+
+/* ---------- actions ---------- */
+function profilePayload(patch){
+ var d=S.profile||{}, o={name:d.name||S.me.name||'',phone:d.phone||'',address:d.address||'',x:typeof d.x==='number'?d.x:null,y:typeof d.y==='number'?d.y:null};
+ Object.keys(patch).forEach(function(k){o[k]=patch[k]});return o;
+}
+function setStatus(uidv,id,st){act('order_status',{id:id,status:st})}
+var A={
+ start:function(){S.screen='home';render()},
+ nav:function(id){S.screen=id;S.editLoc=false;S.draft=null;render()},
+ goHome:function(){S.screen='home';render()}, goMap:function(){S.screen='map';S.editLoc=false;render()}, goOrders:function(){S.screen='orders';render()},
+ goProfile:function(){S.screen='profile';render()},
+ mode:function(id){S.mode=id;render()},
+ editLoc:function(){S.screen='map';S.editLoc=true;S.draft=null;S.form.addr=null;render()},
+ cancelLoc:function(){S.editLoc=false;S.draft=null;S.form.addr=null;render()},
+ saveLoc:function(){
+  if(!S.me.id){toast('Masuk dulu untuk menyimpan lokasi.');S.screen='profile';S.editLoc=false;render();return}
+  var l=myLoc(), addr=(S.form.addr!=null?S.form.addr:((S.profile&&S.profile.address)||'')).trim();
+  if(!addr)return toast('Isi alamat Anda dulu.');
+  act('profile_save',profilePayload({x:Math.round(l.x*10)/10,y:Math.round(l.y*10)/10,address:addr})).then(function(j){if(j){S.editLoc=false;S.draft=null;S.form.addr=null;toast('Lokasi diperbarui.')}render()});
+ },
+ setDraft:function(x,y){S.draft={x:Math.round(x*10)/10,y:Math.round(y*10)/10};render()},
+ pickWs:function(id){S.sel.ws=id;render()},
+ openWs:function(id){S.sel.ws=id;S.screen='book';render()},
+ quick:function(){var n=wsSorted();if(n.length)S.sel.ws=n[0].id;var s=activeSvc();if(s.length&&!S.sel.svc)S.sel.svc=s[0].id;S.screen='book';render()},
+ pickSvc:function(id){S.sel.svc=id;if(!S.sel.ws){var n=wsSorted();if(n.length)S.sel.ws=n[0].id}S.screen='book';render()},
+ pickSvc2:function(id){S.sel.svc=id;render()},
+ pickPay:function(id){S.sel.pay=id;render()},
+ noop:function(){},
+ authMode:function(id){S.authMode=id;render()},
+ doAuth:function(){
+  var reg=S.authMode==='register', body={phone:S.form.aphone||'',pin:S.form.apin||''};
+  if(reg)body.name=S.form.aname||'';
+  act(reg?'register':'login',body,reg?'Pendaftaran berhasil.':'Berhasil masuk.').then(function(j){if(j){S.form.apin='';S.form.aphone='';S.form.aname=''}render()});
+ },
+ adminLogin:function(){
+  act('admin_login',{username:S.form.auser||'',password:S.form.apass||''},'Berhasil masuk.').then(function(j){if(j){S.form.apass='';S.adminTab='orders'}render()});
+ },
+ logout:function(){act('logout',{},'Anda sudah keluar.').then(function(){S.mode='cust';S.screen='home';render()})},
+ saveProfile:function(){
+  if(!S.me.id)return;
+  var p=S.profile||{};
+  act('profile_save',profilePayload({name:(S.form.name!=null?S.form.name:(p.name||S.me.name||'')).trim(),phone:(S.form.phone!=null?S.form.phone:(p.phone||'')).trim()}),'Profil disimpan.').then(function(j){if(j){S.form.name=null;S.form.phone=null}render()});
+ },
+ order:function(){
+  var wk=null,sv=null;S.workshops.forEach(function(x){if(x.id===S.sel.ws)wk=x});S.services.forEach(function(x){if(x.id===S.sel.svc)sv=x});
+  var p=S.profile||{};if(!wk||!sv||!p.address||!S.me.id)return;
+  act('order_create',{workshopId:wk.id,serviceId:sv.id,payment:S.sel.pay,note:(S.form.note||'').trim()},'Pesanan terkirim ke '+wk.name+'.').then(function(j){if(j){S.form.note='';S.screen='orders'}render()});
+ },
+ cancel:function(id){act('order_cancel',{id:id},'Pesanan dibatalkan.').then(function(){render()})},
+ atab:function(id){S.adminTab=id;S.confirmDel=null;render()},
+ filter:function(id){S.filter=id;render()},
+ advance:function(id){var p=id.split('|');setStatus(p[0],p[1],p[2])},
+ addSvc:function(){act('service_save',{patch:{name:'Layanan baru',icon:'servis',price:0,desc:'',active:true}},'Layanan ditambahkan. Ubah nama dan harganya.')},
+ delSvc:function(id){if(S.confirmDel==='svc'+id){S.confirmDel=null;if(S.sel.svc===id)S.sel.svc=null;act('service_delete',{id:id}).then(function(){render()})}else{S.confirmDel='svc'+id;render()}},
+ addWs:function(){act('workshop_save',{patch:{name:'Tukang baru',status:'Siap Datang',rating:5,reviews:0,x:50,y:40,active:true}},'Tukang ditambahkan. Ketuk peta untuk mengatur posisinya.').then(function(j){if(j&&j.id){S.placeId=String(j.id)}render()})},
+ delWs:function(id){if(S.confirmDel==='ws'+id){S.confirmDel=null;if(S.placeId===id)S.placeId=null;act('workshop_delete',{id:id}).then(function(){render()})}else{S.confirmDel='ws'+id;render()}},
+ placeWs:function(id){S.placeId=S.placeId===id?null:id;render()},
+ changePw:function(){act('change_password',{old:S.form.oldpw||'',new:S.form.newpw||''},'Password diganti.').then(function(j){if(j){S.form.oldpw='';S.form.newpw=''}render()})}
+};
+var MAPCLICK={
+ setDraft:A.setDraft,
+ placeWs:function(x,y){if(S.placeId)act('workshop_save',{id:S.placeId,patch:{x:Math.round(x*10)/10,y:Math.round(y*10)/10}})}
+};
+
+$app.addEventListener('click',function(e){
+ var m=e.target.closest('svg.map');
+ if(m&&m.getAttribute('data-edit')&&!e.target.closest('[data-a]')){
+  var r=m.getBoundingClientRect(), x=clamp((e.clientX-r.left)/r.width*100,3,97), y=clamp((e.clientY-r.top)/r.height*80,6,77);
+  var fn=MAPCLICK[m.getAttribute('data-edit')];if(fn)fn(x,y);return;
+ }
+ var t=e.target.closest('[data-a]');if(!t||t.disabled)return;
+ var fn2=A[t.dataset.a];if(fn2)fn2(t.dataset.id);
+});
+$app.addEventListener('keydown',function(e){
+ var t=e.target, en=t.getAttribute&&t.getAttribute('data-enter');
+ if(e.key==='Enter'&&en){e.preventDefault();if(A[en])A[en]();return}
+ if((e.key==='Enter'||e.key===' ')&&t.matches&&t.matches('svg .pin')){e.preventDefault();A.pickWs(t.dataset.id)}
+});
+$app.addEventListener('input',function(e){var t=e.target,d=t.getAttribute&&t.getAttribute('data-d');if(d)S.form[d]=t.value});
+var FIELD_ACTION={services:'service_save',workshops:'workshop_save',config:'config_save'};
+$app.addEventListener('change',function(e){
+ var t=e.target, st=t.getAttribute&&t.getAttribute('data-st');
+ if(st){var p=st.split('|');setStatus(p[0],p[1],t.value);return}
+ var f=t.getAttribute&&t.getAttribute('data-f');if(!f)return;
+ var parts=f.split('|'), v=t.type==='checkbox'?t.checked:(t.type==='number'?Number(t.value):t.value), patch={};
+ if(t.type==='number'&&!isFinite(v))return;
+ patch[parts[2]]=v;
+ act(FIELD_ACTION[parts[0]],parts[0]==='config'?{patch:patch}:{id:parts[1],patch:patch});
+});
+
+/* ---------- mulai ---------- */
+render();
+setTimeout(function(){if(!S.loaded.services){S.slow=true;sched()}},10000);
+refresh().catch(function(){S.slow=true;sched()});
+setInterval(function(){if(!document.hidden)refresh().catch(function(){})},8000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)refresh().catch(function(){})});
+})();
+</script>
+</body>
+</html>
